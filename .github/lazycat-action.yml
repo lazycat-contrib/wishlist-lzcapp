@@ -1,0 +1,30 @@
+update:
+  operation: publish
+  allow_downgrade: false
+  version_source:
+    type: image
+    image: wishlist
+build:
+  toolchains: []
+  run_buildscript: false
+images:
+  - id: wishlist
+    target: service
+    service: wishlist
+    source: cmintey/wishlist
+    channel: stable
+    sort: semver
+    tag_regex: ^v?[0-9]+[.][0-9]+[.][0-9]+$
+    delivery:
+      mode: mirror
+      require_digest_match: true
+release:
+  use_github_release_notes: true
+  store_changelog_format: plain
+stores:
+  official:
+    enabled: false
+  private:
+    enabled: false
+    name: Wishlist
+    skip_if_version_exists: true

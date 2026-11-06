@@ -1,0 +1,18 @@
+package: community.lazycat.app.wishlist
+name: Wishlist
+version: 0.0.0
+description: "Shared wishlists for family and friends: groups, gift claims and public registry links."
+min_os_version: "1.5.0"
+homepage: https://github.com/cmintey/wishlist
+author: cmintey
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Wishlist
+    description: "家庭心愿单：建分组、互加心愿、认领礼物，可生成免登录的公开认领链接。"
+  en:
+    name: Wishlist
+    description: "Shared wishlists for family and friends: groups, gift claims and public registry links."

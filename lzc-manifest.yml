@@ -1,0 +1,52 @@
+application:
+  subdomain: wishlist
+  multi_instance: false
+  # Wishlist has its own account system (public signup + per-group members), so
+  # it owns authentication end to end -> expose it directly instead of stacking
+  # the platform gate on top of it.
+  public_path:
+    - /
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://wishlist:3280/
+
+services:
+  wishlist:
+    # upstream: cmintey/wishlist:v0.69.0
+    image: docker.1ms.run/cmintey/wishlist:v0.69.0
+    environment:
+      - ORIGIN=https://{{ .S.AppDomain }}
+      - TOKEN_TIME=72
+      - DEFAULT_CURRENCY=CNY
+      - LOG_LEVEL=info
+    binds:
+      - /lzcapp/var/uploads:/usr/src/app/uploads
+      - /lzcapp/var/data:/usr/src/app/data
+
+usage: |
+  Wishlist 是一个家庭/朋友之间共享的心愿单应用：建分组、拉成员、互相添加
+  心愿条目，成员可以直接「认领」要送的礼物，避免买重。
+
+  使用方法：
+  1. 打开应用即为注册页。第一个注册的账号就是管理员，
+     之后可在后台把「任何人可注册」关掉，改成邀请制。
+  2. 建一个分组（Group），把家人朋友拉进来；每个分组可以选
+     「Wishlist（互相看心愿）」或「Registry（对外分享认领链接）」模式。
+  3. 想让别人认领礼物又不想让他们注册，就把分组切成 Registry 模式，
+     生成公开链接发出去即可（访客无需登录就能看条目并认领）。
+  4. 条目可以从链接自动抓取商品信息，也可以手动填。
+     币种默认人民币，可在条目上单独修改。
+
+  数据与安全：
+  - SQLite 数据库在 /lzcapp/var/data，上传的图片在 /lzcapp/var/uploads，
+    两者随应用持久化；卸载应用会连同数据一起删除。
+  - 应用直接对外开放（public_path），登录与注册由 Wishlist 自己负责。
+    所以注册后请立刻设置强密码；不需要开放注册时
+    记得在后台把它关掉。
+  - ORIGIN 已按你的访问地址自动填写，用于生成注册/认领链接；
+    如果你换了访问域名，链接会跟着变。
+
+  说明：
+  - 未做实机验证：注册、分组、Registry 认领链接、商品信息抓取均未在设备上实测。
